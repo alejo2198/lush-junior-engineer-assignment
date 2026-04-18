@@ -29,11 +29,15 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@pothos/core": "^4.12.0",
+    "@pothos/plugin-validation": "^4.2.0",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "dotenv": "^17.4.2",
     "graphql": "^16.13.2",
+    "graphql-scalars": "^1.25.0",
     "graphql-yoga": "^5.21.0",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "zod": "^4.3.6"
   }
 }

@@ -23,5 +23,5 @@ builder.queryType({
 
 // ZOD SCHEMAS
 const taskQuerySchema = z.object({
-  id: z.uuid(),
+  id: z.uuid("Invalid ID format"),
 });
