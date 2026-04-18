@@ -1,17 +1,10 @@
 import { createServer } from "node:http";
 import { createYoga } from "graphql-yoga";
-import { schema } from "./schema.ts";
+import { schema } from "./schema/index";
 import { prisma } from "./context.ts";
 
 async function main() {
-  const task = await prisma.task.create({
-    data: {
-      title: "Test Task",
-      description: "This is a test task",
-    },
-  });
-  console.log("Created task:", task);
-  const yoga = createYoga({ schema });
+  const yoga = createYoga({ schema, context: { prisma } });
   const server = createServer(yoga);
   server.listen(4000, () => {
     console.info("Server is running on http://localhost:4000/graphql");
