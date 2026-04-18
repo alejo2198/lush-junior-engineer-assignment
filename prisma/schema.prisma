@@ -8,12 +8,20 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model Task{
   id String @id @default(uuid())
   title String
   // I added description to give more context to the task
   description String?
+  priority Priority @default(MEDIUM)
   completed Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
 }
