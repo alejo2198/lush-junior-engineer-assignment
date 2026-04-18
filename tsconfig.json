@@ -7,9 +7,10 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "node16",
-    "moduleResolution": "node16",
-    "target": "esnext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
+    "ignoreDeprecations": "6.0",
 
     // For nodejs:
     "lib": ["esnext"],
