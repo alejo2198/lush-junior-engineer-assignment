@@ -22,6 +22,53 @@ It includes:
 - Structured GraphQL errors for not-found and internal failures
 - `DateTime` scalar integration using `graphql-scalars`
 
+## Reviewer Quick Start
+
+The fastest way to review this project is with Docker.
+
+### Prerequisites
+
+- Docker Desktop or Docker Engine with Docker Compose support
+
+### Run the API
+
+```bash
+docker compose up --build
+```
+
+What this does:
+
+1. Starts a PostgreSQL container.
+2. Builds and starts the GraphQL API container.
+3. Applies Prisma migrations automatically with `prisma migrate deploy`.
+
+Once startup completes, open:
+
+- `http://localhost:4000/graphql`
+
+### Expected Reviewer Experience
+
+- No real database credentials are required.
+- Docker uses an isolated local Postgres instance.
+- On first boot, the database starts empty and Prisma creates the schema from committed migrations.
+- On later boots, Docker reuses the same Postgres volume unless it is explicitly removed.
+
+### Reset the Docker Database
+
+To stop containers while keeping data:
+
+```bash
+docker compose down
+```
+
+To stop containers and remove the Docker database volume:
+
+```bash
+docker compose down -v
+```
+
+The next `docker compose up --build` after `down -v` will start from a fresh database again.
+
 ## Tech Stack
 
 - Runtime: Node.js + TypeScript
@@ -113,7 +160,56 @@ Example GraphQL error shape:
 }
 ```
 
-## Local Setup
+## Docker Setup
+
+This repository includes a containerized setup for local review without sharing real credentials.
+
+Files added:
+
+- `Dockerfile`
+- `docker-compose.yml`
+- `.dockerignore`
+- `.env.example`
+
+### Run with Docker
+
+```bash
+docker compose up --build
+```
+
+This will:
+
+1. Start PostgreSQL in a `db` container.
+2. Build and start the API in an `api` container.
+3. Run `prisma migrate deploy` on API startup.
+
+Services:
+
+- GraphQL API: `http://localhost:4000/graphql`
+- Postgres: `localhost:5432` (user: `app`, password: `app`, db: `tasks`)
+
+### Stop Docker Services
+
+```bash
+docker compose down
+```
+
+To also remove persisted Postgres data:
+
+```bash
+docker compose down -v
+```
+
+### Environment Variables
+
+- Docker setup does not require a local `.env` for review.
+- Local non-Docker development uses `.env`.
+- `.env.example` contains placeholder/local-safe values.
+- Real credentials should never be committed.
+
+## Local Development Setup
+
+Use this path only if you want to run the API without Docker.
 
 ### Prerequisites
 
@@ -199,6 +295,7 @@ mutation {
 Known gaps / next improvements:
 
 - Add automated tests (unit + integration for resolvers and error cases).
+- Seeding the API with dummy tasks to make it easier to use the mutation without having to make your own
 
 ## Scripts
 
