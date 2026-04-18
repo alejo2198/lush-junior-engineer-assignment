@@ -1,4 +1,5 @@
 import SchemaBuilder from "@pothos/core";
+import ValidationPlugin from "@pothos/plugin-validation";
 import { DateTimeResolver } from "graphql-scalars";
 import { GraphQLContext } from "../context";
 import { Task } from "../../generated/prisma/client";
@@ -12,7 +13,7 @@ const builder = new SchemaBuilder<{
     Task: Task;
   };
 }>({
-  plugins: [],
+  plugins: [ValidationPlugin],
 });
 
 builder.addScalarType("DateTime", DateTimeResolver, {});
