@@ -42,6 +42,25 @@ builder.mutationType({
         return task;
       },
     }),
+    editTask: t.field({
+      type: TaskType,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+        title: t.arg.string(),
+        description: t.arg.string(),
+      },
+      validate: editTaskSchema,
+      resolve: async (_, { id, title, description }, ctx) => {
+        return ctx.prisma.task.update({
+          where: { id },
+          data: {
+            ...(title != null && { title }),
+            ...(description != null && { description }),
+          },
+        });
+      },
+    }),
   }),
 });
 
@@ -53,6 +72,7 @@ const titleSchema = z
 
 const descriptionSchema = z
   .string()
+  .min(1, "Description cannot be empty")
   .max(500, "Description must be less than 500 characters")
   .optional();
 
@@ -61,10 +81,16 @@ const addTaskSchema = z.object({
   description: descriptionSchema,
 });
 
-export const toggleTaskSchema = z.object({
+const toggleTaskSchema = z.object({
   id: z.uuid("Invalid ID format"),
 });
 
-export const deleteTaskSchema = z.object({
+const deleteTaskSchema = z.object({
   id: z.uuid("Invalid ID format"),
+});
+
+const editTaskSchema = z.object({
+  id: z.uuid("Invalid ID format"),
+  title: titleSchema.optional(),
+  description: descriptionSchema.optional(),
 });
