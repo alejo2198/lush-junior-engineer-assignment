@@ -1,6 +1,6 @@
 import { z } from "zod";
 import builder from "../../builder";
-import { TaskType } from "./type";
+import { PriorityEnum, TaskType } from "./type";
 
 builder.mutationType({
   fields: (t) => ({
@@ -61,6 +61,21 @@ builder.mutationType({
         });
       },
     }),
+    setPriority: t.field({
+      type: TaskType,
+      nullable: true,
+      args: {
+        id: t.arg.id({ required: true }),
+        priority: t.arg({ type: PriorityEnum, required: true }),
+      },
+      validate: setPrioritySchema,
+      resolve: async (_, { id, priority }, ctx) => {
+        return ctx.prisma.task.update({
+          where: { id },
+          data: { priority },
+        });
+      },
+    }),
   }),
 });
 
@@ -93,4 +108,10 @@ const editTaskSchema = z.object({
   id: z.uuid("Invalid ID format"),
   title: titleSchema.optional(),
   description: descriptionSchema.optional(),
+});
+
+const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
+const setPrioritySchema = z.object({
+  id: z.uuid("Invalid ID format"),
+  priority: prioritySchema,
 });
