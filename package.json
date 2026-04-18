@@ -1,0 +1,33 @@
+{
+  "name": "lush-junior-engineer-assignment",
+  "version": "1.0.0",
+  "description": "A GraphQL API server that uses Yoga GQL, Prisma + Postgres and Pothos to manage a list of tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development tsx watch src/main.ts",
+    "start": "tsx src/main.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alejo2198/lush-junior-engineer-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/alejo2198/lush-junior-engineer-assignment/issues"
+  },
+  "homepage": "https://github.com/alejo2198/lush-junior-engineer-assignment#readme",
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "graphql": "^16.13.2",
+    "graphql-yoga": "^5.21.0"
+  }
+}
