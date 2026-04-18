@@ -86,8 +86,6 @@ Mutations:
 - `editTask(id: ID!, title: String, description: String): Task`
 - `setPriority(id: ID!, priority: Priority!): Task`
 
-Note: some mutation fields are currently nullable in schema definition even though not-found now throws an error. This can be tightened later for stricter contract semantics.
-
 ## Error Handling Strategy
 
 The service uses centralized helpers in `src/errors.ts`:
@@ -159,6 +157,20 @@ GraphQL endpoint:
 
 ## Example Operations
 
+Get by id:
+
+```graphql
+query {
+  task(id: "<task-id>") {
+    id
+    title
+    description
+    priority
+    completed
+  }
+}
+```
+
 Create task:
 
 ```graphql
@@ -176,33 +188,6 @@ mutation {
 }
 ```
 
-Set priority:
-
-```graphql
-mutation {
-  setPriority(id: "<task-id>", priority: HIGH) {
-    id
-    title
-    priority
-    updatedAt
-  }
-}
-```
-
-Get by id:
-
-```graphql
-query {
-  task(id: "<task-id>") {
-    id
-    title
-    description
-    priority
-    completed
-  }
-}
-```
-
 ## Migrations Included
 
 - `20260418154830_init_task_table`
@@ -211,18 +196,9 @@ query {
 
 ## Reviewer Notes
 
-Design decisions:
-
-- Chose Pothos for strongly typed schema composition.
-- Used Zod at resolver boundary for predictable argument validation.
-- Added explicit error codes to improve API client handling.
-
 Known gaps / next improvements:
 
 - Add automated tests (unit + integration for resolvers and error cases).
-- Make mutation nullability stricter where resolver always throws on not-found.
-- Add global Yoga error formatting and request logging.
-- Add Docker and docker-compose for one-command local environment spin-up.
 
 ## Scripts
 
