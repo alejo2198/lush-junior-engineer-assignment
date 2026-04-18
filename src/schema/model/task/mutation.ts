@@ -1,6 +1,7 @@
 import { z } from "zod";
 import builder from "../../builder";
 import { PriorityEnum, TaskType } from "./type";
+import { notFound, gqlError } from "../../../errors";
 
 builder.mutationType({
   fields: (t) => ({
@@ -11,10 +12,14 @@ builder.mutationType({
         description: t.arg.string(),
       },
       validate: addTaskSchema,
-      resolve: (_, { title, description }, ctx) => {
-        return ctx.prisma.task.create({
-          data: { title, ...(description && { description }) },
-        });
+      resolve: async (_, { title, description }, ctx) => {
+        try {
+          return await ctx.prisma.task.create({
+            data: { title, ...(description != null && { description }) },
+          });
+        } catch {
+          gqlError("Failed to create task", "INTERNAL");
+        }
       },
     }),
     toggleTask: t.field({
@@ -24,11 +29,15 @@ builder.mutationType({
       validate: toggleTaskSchema,
       resolve: async (_, { id }, ctx) => {
         const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) return null;
-        return ctx.prisma.task.update({
-          where: { id },
-          data: { completed: !task.completed },
-        });
+        if (!task) notFound("Task", id);
+        try {
+          return await ctx.prisma.task.update({
+            where: { id },
+            data: { completed: !task.completed },
+          });
+        } catch {
+          gqlError("Failed to toggle task", "INTERNAL");
+        }
       },
     }),
     deleteTask: t.field({
@@ -37,8 +46,13 @@ builder.mutationType({
       validate: deleteTaskSchema,
       resolve: async (_, { id }, ctx) => {
         const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) return null;
-        await ctx.prisma.task.delete({ where: { id } });
+        if (!task) notFound("Task", id);
+        try {
+          await ctx.prisma.task.delete({ where: { id } });
+        } catch {
+          gqlError("Failed to delete task", "INTERNAL");
+        }
+
         return task;
       },
     }),
@@ -52,13 +66,19 @@ builder.mutationType({
       },
       validate: editTaskSchema,
       resolve: async (_, { id, title, description }, ctx) => {
-        return ctx.prisma.task.update({
-          where: { id },
-          data: {
-            ...(title != null && { title }),
-            ...(description != null && { description }),
-          },
-        });
+        const task = await ctx.prisma.task.findUnique({ where: { id } });
+        if (!task) notFound("Task", id);
+        try {
+          return await ctx.prisma.task.update({
+            where: { id },
+            data: {
+              ...(title != null && { title }),
+              ...(description != null && { description }),
+            },
+          });
+        } catch {
+          gqlError("Failed to edit task", "INTERNAL");
+        }
       },
     }),
     setPriority: t.field({
@@ -70,10 +90,16 @@ builder.mutationType({
       },
       validate: setPrioritySchema,
       resolve: async (_, { id, priority }, ctx) => {
-        return ctx.prisma.task.update({
-          where: { id },
-          data: { priority },
-        });
+        const task = await ctx.prisma.task.findUnique({ where: { id } });
+        if (!task) notFound("Task", id);
+        try {
+          return await ctx.prisma.task.update({
+            where: { id },
+            data: { priority },
+          });
+        } catch {
+          gqlError("Failed to set priority", "INTERNAL");
+        }
       },
     }),
   }),
