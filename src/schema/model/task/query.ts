@@ -1,7 +1,7 @@
 import builder from "../../builder";
 import { TaskType } from "./type";
-import { notFound } from "../../../errors";
 import { z } from "zod";
+import { findTaskOrThrow, taskIdSchema } from "./shared";
 
 builder.queryType({
   fields: (t) => ({
@@ -11,11 +11,7 @@ builder.queryType({
       nullable: true,
       args: { id: t.arg.id({ required: true }) },
       validate: taskQuerySchema,
-      resolve: async (_, { id }, ctx) => {
-        const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) notFound("Task", id);
-        return task;
-      },
+      resolve: async (_, { id }, ctx) => findTaskOrThrow(ctx, id),
     }),
     tasks: t.field({
       type: [TaskType],
@@ -28,5 +24,5 @@ builder.queryType({
 
 // ZOD SCHEMAS
 const taskQuerySchema = z.object({
-  id: z.uuid("Invalid ID format"),
+  id: taskIdSchema,
 });

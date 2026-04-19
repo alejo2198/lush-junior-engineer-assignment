@@ -14,10 +14,10 @@ enum Priority {
   HIGH
 }
 
+ // I added description & priorityto give more context to the task
 model Task{
   id String @id @default(uuid())
   title String
-  // I added description to give more context to the task
   description String?
   priority Priority @default(MEDIUM)
   completed Boolean @default(false)

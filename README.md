@@ -41,6 +41,7 @@ What this does:
 1. Starts a PostgreSQL container.
 2. Builds and starts the GraphQL API container.
 3. Applies Prisma migrations automatically with `prisma migrate deploy`.
+4. Seeds the database automatically with 5 starter tasks.
 
 Once startup completes, open:
 
@@ -51,6 +52,7 @@ Once startup completes, open:
 - No real database credentials are required.
 - Docker uses an isolated local Postgres instance.
 - On first boot, the database starts empty and Prisma creates the schema from committed migrations.
+- On first boot, the API also inserts 5 starter tasks through Prisma seed.
 - On later boots, Docker reuses the same Postgres volume unless it is explicitly removed.
 
 ### Reset the Docker Database
@@ -235,6 +237,14 @@ npx prisma generate
 npx prisma migrate deploy
 ```
 
+### Seed Tasks
+
+```bash
+npm run seed
+```
+
+This seeds 5 starter tasks and skips seeding if tasks already exist.
+
 For local schema changes during development, use:
 
 ```bash
@@ -295,7 +305,7 @@ mutation {
 Known gaps / next improvements:
 
 - Add automated tests (unit + integration for resolvers and error cases).
-- Seeding the API with dummy tasks to make it easier to use the mutation without having to make your own
+- I'm concerned that my mutations are making extra DB calls, one to ensure the task exists and one for the action. Would consult with senior backend developer.
 
 ## Scripts
 
