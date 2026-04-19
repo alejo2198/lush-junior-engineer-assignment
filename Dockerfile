@@ -14,5 +14,5 @@ RUN npx prisma generate
 
 EXPOSE 4000
 
-# Apply migrations on startup, then run the API.
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+# Apply migrations and seeding on startup, then run the API.
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm run start"]
