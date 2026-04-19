@@ -305,6 +305,7 @@ mutation {
 Known gaps / next improvements:
 
 - Add automated tests (unit + integration for resolvers and error cases).
+- I'm concerned that my mutations are making extra DB calls, one to ensure the task exists and one for the action. Would consult with senior backend developer.
 
 ## Scripts
 

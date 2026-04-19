@@ -1,7 +1,8 @@
 import { z } from "zod";
 import builder from "../../builder";
 import { PriorityEnum, TaskType } from "./type";
-import { notFound, gqlError } from "../../../errors";
+import { gqlError } from "../../../errors";
+import { findTaskOrThrow, taskIdSchema } from "./shared";
 
 builder.mutationType({
   fields: (t) => ({
@@ -28,8 +29,7 @@ builder.mutationType({
       args: { id: t.arg.id({ required: true }) },
       validate: toggleTaskSchema,
       resolve: async (_, { id }, ctx) => {
-        const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) notFound("Task", id);
+        const task = await findTaskOrThrow(ctx, id);
         try {
           return await ctx.prisma.task.update({
             where: { id },
@@ -45,8 +45,7 @@ builder.mutationType({
       args: { id: t.arg.id({ required: true }) },
       validate: deleteTaskSchema,
       resolve: async (_, { id }, ctx) => {
-        const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) notFound("Task", id);
+        const task = await findTaskOrThrow(ctx, id);
         try {
           await ctx.prisma.task.delete({ where: { id } });
         } catch {
@@ -66,8 +65,7 @@ builder.mutationType({
       },
       validate: editTaskSchema,
       resolve: async (_, { id, title, description }, ctx) => {
-        const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) notFound("Task", id);
+        await findTaskOrThrow(ctx, id);
         try {
           return await ctx.prisma.task.update({
             where: { id },
@@ -90,8 +88,7 @@ builder.mutationType({
       },
       validate: setPrioritySchema,
       resolve: async (_, { id, priority }, ctx) => {
-        const task = await ctx.prisma.task.findUnique({ where: { id } });
-        if (!task) notFound("Task", id);
+        await findTaskOrThrow(ctx, id);
         try {
           return await ctx.prisma.task.update({
             where: { id },
@@ -123,21 +120,21 @@ const addTaskSchema = z.object({
 });
 
 const toggleTaskSchema = z.object({
-  id: z.uuid("Invalid ID format"),
+  id: taskIdSchema,
 });
 
 const deleteTaskSchema = z.object({
-  id: z.uuid("Invalid ID format"),
+  id: taskIdSchema,
 });
 
 const editTaskSchema = z.object({
-  id: z.uuid("Invalid ID format"),
+  id: taskIdSchema,
   title: titleSchema.optional(),
   description: descriptionSchema.optional(),
 });
 
 const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
 const setPrioritySchema = z.object({
-  id: z.uuid("Invalid ID format"),
+  id: taskIdSchema,
   priority: prioritySchema,
 });
